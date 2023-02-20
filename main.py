@@ -1,13 +1,11 @@
-from src.server import Server
 from threading import Thread
-
-HOST = "10.252.101.174"
+from src.server import Server
 
 LEFT_PORT = 5001
 RIGHT_PORT = 5002
 
-left = Server(HOST, LEFT_PORT)
-right = Server(HOST, RIGHT_PORT)
+left = Server(LEFT_PORT)
+right = Server(RIGHT_PORT)
 
 l_thr = Thread(target=left.run, args=())
 r_thr = Thread(target=right.run, args=())
