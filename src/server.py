@@ -6,13 +6,21 @@ import queue
 import socket
 import struct
 
+from nvjpeg import NvJpeg
 from datetime import datetime
 from turbojpeg import TurboJPEG
-
+from src.load_cfg import LoadConfig
 
 class Server:
-    def __init__(self, HOST, PORT):
-        self.HOST = HOST
+    def __init__(self, PORT):
+        self.config = LoadConfig("./config/config.yaml").info
+
+        if self.config["gpu_decompression"]:
+            self.decomp = NvJpeg()
+        else:
+            self.decomp = TurboJPEG()
+
+        self.HOST = self.config["host"]
         self.PORT = PORT
 
         self.MAX_DGRAM = 2 ** 16
@@ -24,7 +32,6 @@ class Server:
         self.all_data = None
 
         self.img = None
-        self.jpeg = TurboJPEG()
 
         self.client_get_img_time = None
         self.server_get_img_time = None
@@ -131,7 +138,7 @@ class Server:
             if is_data_corrupted:
                 print("corrupted image has been deleted")
             else:
-                self.img = self.jpeg.decode(self.all_data)
+                self.img = self.decomp.decode(self.all_data)
 
                 self.server_get_img_time = datetime.now().time().isoformat()
                 self.get_fps()
@@ -141,6 +148,9 @@ class Server:
                 self.get_mean_latency()
 
                 self.show()
+
+                cv2.imshow(str(self.PORT), self.img)
+                cv2.waitKey(1)
 
     def run(self):
         while True:
