@@ -3,8 +3,10 @@ import cv2
 import zlib
 import time
 import queue
+import pickle
 import socket
 import struct
+import numpy as np
 
 from nvjpeg import NvJpeg
 from datetime import datetime
@@ -31,7 +33,12 @@ class Server:
         self.tmp_data = b''
         self.all_data = None
 
-        self.img = None
+        self.imu   = None
+        self.color = None
+        self.depth = None
+
+        self.acc_xyz  = None
+        self.gyro_xyz = None
 
         self.client_get_img_time = None
         self.server_get_img_time = None
@@ -127,10 +134,10 @@ class Server:
         seg, addr = self.sock.recvfrom(self.MAX_DGRAM)
         seg = seg.split(b'end')
         if struct.unpack("B", seg[0])[0] > 1:
-            self.tmp_data += seg[6]
+            self.tmp_data += seg[7]
         else:
             self.client_get_img_time = seg[3].decode('utf-8')
-            self.tmp_data += seg[6]
+            self.tmp_data += seg[7]
             self.all_data = self.tmp_data
             self.tmp_data = b''
 
@@ -138,8 +145,14 @@ class Server:
             if is_data_corrupted:
                 print("corrupted image has been deleted")
             else:
-                self.img = self.decomp.decode(self.all_data)
-
+                self.all_data = self.all_data.split(b'frame')
+                self.imu = pickle.loads(seg[6])
+                self.acc_xyz = self.imu[0]
+                self.gyro_xyz = self.imu[1]
+                # print('Accelerometers:      ' + str(self.acc_xyz))
+                # print('Gyros:               ' + str(self.gyro_xyz))
+                self.color = self.decomp.decode(self.all_data[0])
+                self.depth = cv2.imdecode(np.asarray(bytearray(self.all_data[1]), dtype=np.uint8), cv2.IMREAD_UNCHANGED)
                 self.server_get_img_time = datetime.now().time().isoformat()
                 self.get_fps()
                 self.get_mean_fps()
@@ -149,7 +162,8 @@ class Server:
 
                 self.show()
 
-                cv2.imshow(str(self.PORT), self.img)
+                cv2.imshow(str(self.PORT) + '_color', self.color)
+                cv2.imshow(str(self.PORT) + '_depth', self.depth)
                 cv2.waitKey(1)
 
     def run(self):

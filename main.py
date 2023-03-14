@@ -1,15 +1,8 @@
-from threading import Thread
 from src.server import Server
 
-LEFT_PORT = 5001
-RIGHT_PORT = 5002
+PORT = 5001
 
-left = Server(LEFT_PORT)
-right = Server(RIGHT_PORT)
-
-l_thr = Thread(target=left.run, args=())
-r_thr = Thread(target=right.run, args=())
+server = Server(PORT)
 
 if __name__ == "__main__":
-    l_thr.start()
-    r_thr.start()
+    server.run()
