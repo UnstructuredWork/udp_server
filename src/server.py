@@ -158,23 +158,18 @@ class Server:
         while True:
             self.recv_udp()
 
-class KinectServer(Server):
+class DeticServer(Server):
     def __init__(self, PORT):
         super().__init__(PORT)
-        self.imu   = None
-        self.depth = None
-
-        self.acc_xyz  = None
-        self.gyro_xyz = None
 
     def recv_udp(self):
         seg, addr = self.sock.recvfrom(self.MAX_DGRAM)
         seg = seg.split(b'end')
         if struct.unpack("B", seg[0])[0] > 1:
-            self.tmp_data += seg[7]
+            self.tmp_data += seg[6]
         else:
             self.client_get_img_time = seg[3].decode('utf-8')
-            self.tmp_data += seg[7]
+            self.tmp_data += seg[6]
             self.all_data = self.tmp_data
             self.tmp_data = b''
 
@@ -182,15 +177,8 @@ class KinectServer(Server):
             if is_data_corrupted:
                 print("corrupted image has been deleted")
             else:
-                self.all_data = self.all_data.split(b'frame')
-                self.imu = pickle.loads(seg[6])
-                self.acc_xyz = self.imu[0]
-                self.gyro_xyz = self.imu[1]
-                # print('Accelerometers:      ' + str(self.acc_xyz))
-                # print('Gyros:               ' + str(self.gyro_xyz))
-                self.rgb = self.decomp.decode(self.all_data[0])
-                self.depth = cv2.imdecode(np.asarray(bytearray(self.all_data[1]), dtype=np.uint8),
-                                          cv2.IMREAD_UNCHANGED)
+                result = pickle.loads(zlib.decompress(self.all_data))
+
                 self.server_get_img_time = datetime.now().time().isoformat()
                 self.get_fps()
                 self.get_mean_fps()
@@ -200,8 +188,17 @@ class KinectServer(Server):
 
                 self.show()
 
-                cv2.imshow(str(self.PORT) + '_color', self.rgb)
-                cv2.imshow(str(self.PORT) + '_depth', self.depth)
+                classes = result[0]
+                bboxes = result[1]
+                mask = result[2]
 
+                vmask = mask.astype(np.uint8)
+                vmask = cv2.applyColorMap(vmask, cv2.COLORMAP_JET)
+                for bbox in bboxes:
+                    bbox[0::2] *= 540
+                    bbox[1::2] *= 360
+                    bbox = bbox.astype(int)
+                    vmask = cv2.rectangle(vmask, bbox[:2], bbox[2:], (0, 0, 255), 3)
+
+                cv2.imshow('detic', cv2.resize(vmask, [960, 540]))
                 cv2.waitKey(1)
-
