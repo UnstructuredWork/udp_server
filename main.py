@@ -1,5 +1,8 @@
 from threading import Thread
-from src.server import Server, KinectServer, DeticServer, DepthServer
+from src.server.server import Server
+from src.server.detic_server import DeticServer
+from src.server.depth_server import DepthServer
+from src.server.kinect_server import KinectServer
 
 LEFT_PORT = 5001
 RIGHT_PORT = 5002
