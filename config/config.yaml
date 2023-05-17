@@ -1,2 +1,2 @@
 host: "10.252.101.139"
-gpu_decompression: False # True: NvJpeg, False: TurboJPEG
+gpu_decompression: True # True: NvJpeg, False: TurboJPEG
