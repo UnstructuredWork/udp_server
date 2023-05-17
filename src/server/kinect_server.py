@@ -37,8 +37,15 @@ class KinectServer(Server):
 
                 # if want to show IMU
                 '''
-                print('Accelerometers:      ' + str(self.acc_xyz))
-                print('Gyros:               ' + str(self.gyro_xyz))
+                print('IMU Results: ')
+                print('=' * 70)
+                print('Accelerometers:')
+                print(self.acc_xyz)
+                print()
+                print('Gyros:')
+                print(self.gyro_xyz)
+                print('=' * 70)
+                print()
                 '''
 
                 self.rgb = self.decomp.decode(self.all_data[0])
