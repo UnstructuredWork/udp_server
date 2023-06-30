@@ -1,6 +1,6 @@
 from src.server import Server
 
-LEFT_PORT = 5053
+LEFT_PORT = 5052
 
 left = Server(LEFT_PORT)
 
