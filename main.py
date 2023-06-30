@@ -3,7 +3,7 @@ from src.server import Server, KinectServer
 
 LEFT_PORT = 5001
 RIGHT_PORT = 5002
-KINECT_PORT = 5008
+KINECT_PORT = 5003
 
 left = Server(LEFT_PORT)
 right = Server(RIGHT_PORT)
