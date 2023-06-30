@@ -60,6 +60,8 @@ class KinectServer(Server):
 
                 # self.show()
 
+                # self.depth = cv2.applyColorMap(self.depth.astype(np.uint8), cv2.COLORMAP_JET)
+
                 cv2.imshow(str(self.PORT) + '_color', self.rgb)
                 cv2.imshow(str(self.PORT) + '_depth', self.depth)
 
