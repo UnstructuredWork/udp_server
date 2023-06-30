@@ -68,5 +68,5 @@ if args.run:
 # ntp server와의 offset 확인
 if args.offset:
     print("[INFO] Check offset")
-    terminal_command = "w32tm /stripchart /computer:" + args.ip + "/dataonly /samples:5"
+    terminal_command = "w32tm /stripchart /computer:" + args.ip + " /dataonly /samples:5"
     os.system(terminal_command)
