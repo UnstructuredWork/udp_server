@@ -32,7 +32,7 @@ if args.registry:
 # windows NTP Server 설정 확인
 if args.check:
     print('[INFO] Setting NtpServer IP')
-    terminal_command = "w32tm /config /syncfromflags:manual /manualpeerlist:{" + args.ip + "} /update"
+    terminal_command = "w32tm /config /syncfromflags:manual /manualpeerlist:" + args.ip + " /update"
     os.system(terminal_command)
     print('-' * 60)
 
