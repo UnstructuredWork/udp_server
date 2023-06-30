@@ -1,6 +1,6 @@
 from src.server import DeticServer
 
-DETIC_PORT = 5054
+DETIC_PORT = 5051
 
 detic = DeticServer(DETIC_PORT)
 
