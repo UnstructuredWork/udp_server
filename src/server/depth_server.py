@@ -36,8 +36,6 @@ class DepthServer(Server):
                 self.get_mean_latency()
 
                 # self.show()
-
-                # self.depth = cv2.applyColorMap(self.depth.astype(np.uint8), cv2.COLORMAP_JET)
                 
                 cv2.imshow(str(self.PORT), self.depth)
                 cv2.waitKey(1)
